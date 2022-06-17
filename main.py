@@ -1,5 +1,6 @@
 import chess
 import numpy as np
+import time
 
 board = chess.Board()
 
@@ -166,5 +167,8 @@ while True:
     move = input("Move: ")
     board.push_uci(move)
     print(board)
+    start = time.time()
     board.push_uci(get_best_move())
+    end = time.time()
+    print("Time:", end - start)
     print("---------------")
