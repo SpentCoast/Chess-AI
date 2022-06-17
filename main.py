@@ -12,7 +12,7 @@ def minimax_root(depth, isMaximisingPlayer):
     for item in list(board.legal_moves):
         moves.append(str(item))
 
-    best_move = -9999
+    best_move = -99999
     best_move_found = 0
 
     for i in np.arange(len(moves)):
@@ -38,7 +38,7 @@ def minimax(depth, alpha, beta, isMaximisingPlayer):
         moves.append(str(item))
 
     if isMaximisingPlayer:
-        best_move = -9999
+        best_move = -99999
 
         for i in np.arange(len(moves)):
             board.push_uci(moves[i])
@@ -52,7 +52,7 @@ def minimax(depth, alpha, beta, isMaximisingPlayer):
         return best_move
 
     else:
-        best_move = 9999
+        best_move = 99999
         for i in np.arange(len(moves)):
             board.push_uci(moves[i])
             best_move = min(best_move, minimax(depth - 1, alpha, beta, not isMaximisingPlayer))
@@ -71,7 +71,7 @@ def calculate_best_move():
         moves.append(str(item))
 
     best_move = None
-    best_value = -9999
+    best_value = -99999
 
     for i in range(len(moves)):
         move = moves[i]
@@ -129,12 +129,13 @@ def get_piece_value(piece, x, y):
 
 
 def evaluate_board():
-    pawn = 10
-    rook = 50
-    knight = 30
-    bishop = 30
-    queen = 90
-    king = 900
+    pawn = 100
+    rook = 500
+    knight = 300
+    bishop = 300
+    queen = 900
+    king = 9000
+    checkmate = 99999
 
     wp = len(board.pieces(chess.PAWN, chess.WHITE)) * pawn
     wr = len(board.pieces(chess.ROOK, chess.WHITE)) * rook
@@ -150,7 +151,18 @@ def evaluate_board():
     bq = len(board.pieces(chess.QUEEN, chess.BLACK)) * queen
     bk = len(board.pieces(chess.KING, chess.BLACK)) * king
 
-    return (wp + wr + wn + wb + wq + wk) - (bp + br + bn + bb + bq + bk)
+    try:
+        if board.outcome().winner:
+            return checkmate
+
+        elif not board.outcome().winner:
+            return -checkmate
+
+        elif board.outcome().result() == "1/2-1/2":
+            return 0
+
+    except:
+        return (wp + wr + wn + wb + wq + wk) - (bp + br + bn + bb + bq + bk)
 
 
 def get_best_move():
@@ -163,12 +175,17 @@ def get_best_move():
 
 
 while True:
-    print(board)
-    move = input("Move: ")
-    board.push_uci(move)
-    print(board)
-    start = time.time()
+    print(board, "\n")
+
+    moved = False
+    while not moved:
+        move = input("Move: ")
+        try:
+            board.push_uci(move)
+            moved = True
+        except:
+            print("Invalid move")
+
+    print("\n" + str(board), "\n")
     board.push_uci(get_best_move())
-    end = time.time()
-    print("Time:", end - start)
-    print("---------------")
+    print("---------------" + "\n")
