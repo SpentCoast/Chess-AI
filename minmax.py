@@ -1,6 +1,5 @@
 import chess
 import numpy as np
-import time
 
 board = chess.Board()
 
